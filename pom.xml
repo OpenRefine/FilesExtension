@@ -1,0 +1,130 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <properties>
+    <openrefine.version>3.8.7</openrefine.version>
+    <!-- Change the values below, as well as the groupId & url, to reflect your extension -->
+    <extension.id>openrefine-sample-extension</extension.id>
+    <extension.name>OpenRefine Sample Extension</extension.name>
+  </properties>
+
+  <groupId>org.openrefine</groupId>
+  <artifactId>${extension.id}</artifactId>
+  <packaging>jar</packaging>
+  <version>0.1.0</version>
+
+  <name>${extension.name}</name>
+  <description>${extension.name} provided for demonstration purposes</description>
+  <url>http://openrefine.org/</url>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.13.0</version>
+        <configuration>
+          <release>11</release> <!-- minimum version of Java required by your extension -->
+          <encoding>UTF-8</encoding>
+          <showDeprecation>true</showDeprecation>
+        </configuration>
+      </plugin>
+      <!-- package the Java source code of this extension into a .jar file to be loaded by OpenRefine -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.4.2</version>
+        <executions>
+          <execution>
+            <id>default-jar</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <configuration>
+              <skipIfEmpty>true</skipIfEmpty>
+              <outputDirectory>module/MOD-INF/lib</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Add .jar files of all dependencies of this extension -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.8.1</version>
+        <executions>
+            <execution>
+            <phase>compile</phase>
+            <goals>
+                <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+                <outputDirectory>module/MOD-INF/lib</outputDirectory>
+                <includeScope>runtime</includeScope>
+            </configuration>
+            </execution>
+        </executions>
+      </plugin>
+      <!-- package the extension as a zip file -->
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>3.7.1</version>
+        <configuration>
+          <appendAssemblyId>false</appendAssemblyId>	
+          <descriptors>
+            <descriptor>src/assembly/extension.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Run java unit tests -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.2</version>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+     <dependency>
+      <groupId>org.openrefine</groupId>
+      <artifactId>main</artifactId>
+      <version>${openrefine.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>4.0.1</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- add here the dependencies of your extension -->
+
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>7.10.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.openrefine</groupId>
+      <artifactId>main</artifactId>
+      <version>${openrefine.version}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>
+
