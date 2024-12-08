@@ -5,17 +5,17 @@
   <properties>
     <openrefine.version>3.8.7</openrefine.version>
     <!-- Change the values below, as well as the groupId & url, to reflect your extension -->
-    <extension.id>openrefine-sample-extension</extension.id>
-    <extension.name>OpenRefine Sample Extension</extension.name>
+    <extension.id>openrefine-files-extension</extension.id>
+    <extension.name>OpenRefine Files Extension</extension.name>
   </properties>
 
   <groupId>org.openrefine</groupId>
-  <artifactId>${extension.id}</artifactId>
+  <artifactId>openrefine-files-extension</artifactId>
   <packaging>jar</packaging>
   <version>0.1.0</version>
 
   <name>${extension.name}</name>
-  <description>${extension.name} provided for demonstration purposes</description>
+  <description>Files extension provides ability to create dataset with file details</description>
   <url>http://openrefine.org/</url>
 
   <build>

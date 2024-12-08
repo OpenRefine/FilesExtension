@@ -5,6 +5,7 @@ import static org.testng.Assert.assertThrows;
 
 import java.io.Serializable;
 
+import org.openrefine.extensions.files.FilesUtil;
 import org.testng.annotations.Test;
 import com.google.refine.RefineTest;
 import com.google.refine.model.Project;
@@ -23,12 +24,12 @@ public class SampleUtilTest extends RefineTest {
 
         String[] myArray = new String[] { "foo", "bar" };
         
-        assertEquals(SampleUtil.stringArrayLength(myArray), 2);
+        assertEquals(FilesUtil.stringArrayLength(myArray), 2);
     }
     
     @Test
     public void testNullPointerException() {
-        assertThrows(NullPointerException.class, () -> SampleUtil.stringArrayLength(null));
+        assertThrows(NullPointerException.class, () -> FilesUtil.stringArrayLength(null));
     }
 
 }
