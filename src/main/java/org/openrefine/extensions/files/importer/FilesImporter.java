@@ -10,12 +10,11 @@ import com.google.refine.importing.ImportingJob;
 import com.google.refine.model.Project;
 import com.google.refine.util.JSONUtilities;
 import com.google.refine.util.ParsingUtilities;
+import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
@@ -200,25 +199,47 @@ public class FilesImporter {
     }
 
     private static boolean isBinaryFile(Path path)  {
-        byte[] buffer = new byte[1024];
-        try (var inputStream = Files.newInputStream(path)) {
-            int bytesRead = inputStream.read(buffer);
+        boolean isBinary = true;
+        try (InputStream is = new FileInputStream(String.valueOf(path))) {
+            byte[] magic = new byte[4];
+            int count = is.read(magic);
+            if (count == 4 && (Arrays.equals(magic, new byte[] { 0x50, 0x4B, 0x03, 0x04 }) || // zip
+                    Arrays.equals(magic, new byte[] { 0x50, 0x4B, 0x07, 0x08 }) ||
+                    Arrays.equals(magic, new byte[] {(byte) 0x89, 0x50, 0x4E, 0x47 }) || //89504E47 PNG
+                    Arrays.equals(magic, new byte[] { 0x25, 0x55, 0x44, 0x46 }) || //25504446 PDF
+                    Arrays.equals(magic, new byte[] { 0x47, 0x49, 0x46, 0x38 }) || //47494638 GIF
+                    Arrays.equals(magic, new byte[] {(byte) 0xD0, (byte) 0xCF, 0x11, (byte) 0xE0}) ||
+                    (magic[0] == 0xFF && magic[1] == 0xD8 && magic[2] == 0xFF) ||
+                    (magic[0] == 0x42 && magic[1] == 0x4D) ||
+                    (magic[0] == 0x40 && magic[1] == 0x5A) ||
+                    (magic[0] == 0x1F && magic[1] == (byte) 0x8B) || // gzip
+                    (magic[0] == 'B' && magic[1] == 'Z' && magic[2] == 'h')) // bzip2
+            ) {
+                return isBinary;
+            }
+            byte[] buffer = new byte[1024];
+            int bytesRead = is.read(buffer);
             for (int i = 0; i < bytesRead; i++) {
                 if (buffer[i] < 0x09 || (buffer[i] > 0x0D && buffer[i] < 0x20 && buffer[i] != 0x7F)) {
-                    return true;
+                    return isBinary; // Non-text character detected
                 }
             }
+            isBinary = false;
         }
         catch (IOException e) {
-            // do nothing
-            logger.info("--- importDirectory. Failed to read file content: " + e.getMessage());
+            // consider as binary
         }
-        return false;
+        return isBinary;
     }
 
     private static String escapeForCsv(String content) {
-        content = content.replace("\"", "\"\"");
-        content = content.replace("\n", "\\n")
+        if ( content == null ) {
+            return "\"\'";
+        }
+        content = StringEscapeUtils.escapeHtml4(content);
+
+        content = content.replace("\"", "\"\"")
+                .replace("\n", "\\n")
                 .replace("\r", "\\r")
                 .replace("\t", "\\t")
                 .trim();
