@@ -22,6 +22,8 @@ When this extension is installed correctly, you will now see the additional opti
 
 After installing this extension, click the 'Files from local directory' option to start a new project in OpenRefine. You will be prompted to specify one or more folders.
 
+Due to security restrictions, directory selection is not supported. The path to the directory will have to keyed in.
+
 Next, in the project preview screen (`Configure parsing options`), you can view the details of the files in the specified folder(s).
 
 File names will already be reconciled when your project starts.
