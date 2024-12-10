@@ -8,7 +8,6 @@
     "files-import/warning-dir-path": "You must specify a path to the directory to be imported.",
     "files-import/preparing": "Preparing…",
     "files-import/creating": "Creating project…",
-    "files-import/import-by-directory": "Enter one or more Wikimedia Commons categories from which you want to retrieve files:",
     "files-import/remove-directory": "Remove this directory",
     "files-import/add": "Add another category",
     "files-import/next": "Next",
@@ -17,15 +16,5 @@
     "files-parsing/start-over": "&laquo; Start Over",
     "files-parsing/conf-pars": "Configure Parsing Options",
     "files-parsing/proj-name": "Project&nbsp;name",
-    "files-parsing/create-proj": "Create Project &raquo;",
-    "files-source/alert-retrieve": "No Category selected",
-    "files-parsing/option": "Options:",
-    "files-parsing/discard-next": "Discard initial",
-    "files-parsing/discard": "row(s) of data",
-    "files-parsing/limit-next": "Load at most",
-    "files-parsing/limit": "row(s) of data",
-    "files-parsing/filetext-column": "Include a column with file text",
-    "files-parsing/preview-button": "Update&nbsp;preview",
-    "files-parsing/disable-auto-preview": "Disable auto preview",
-    "files-parsing/updating-preview": "Updating preview…"
+    "files-parsing/create-proj": "Create Project &raquo;"
 }

@@ -153,8 +153,7 @@ public class FilesImportingControllerTest {
 
     private void validateLocalDirectoryTestResults(Row row) {
         String fileCellValue = row.getCellValue(0).toString();
-        System.out.println("row -- " + fileCellValue);
-        System.out.println(" row -> " + row.toString());
+
         if ( fileCellValue.startsWith("birds")) {
             Assert.assertEquals(row.getCellValue(2).toString(), "csv");
             Assert.assertNotNull(row.getCellValue(7));
@@ -165,31 +164,31 @@ public class FilesImportingControllerTest {
             Assert.assertEquals(row.getCellValue(2).toString(), "tsv");
             Assert.assertNotNull(row.getCellValue(7));
             Assert.assertNotNull(row.getCellValue(8));
-            Assert.assertNull(row.getCellValue(9));
+            Assert.assertNotNull(row.getCellValue(9));
         }
         else if ( fileCellValue.startsWith("dates")) {
             Assert.assertEquals(row.getCellValue(2).toString(), "xls");
             Assert.assertNotNull(row.getCellValue(7));
             Assert.assertNotNull(row.getCellValue(8));
-            Assert.assertNull(row.getCellValue(9));
+            Assert.assertEquals(row.getCellValue(9).toString().trim().length(), 0);
         }
         else if ( fileCellValue.startsWith("euc-jp")) {
             Assert.assertEquals(row.getCellValue(2).toString(), "html");
             Assert.assertNotNull(row.getCellValue(7));
             Assert.assertNotNull(row.getCellValue(8));
-            Assert.assertNull(row.getCellValue(9));
+            Assert.assertNotNull(row.getCellValue(9));
         }
         else if ( fileCellValue.startsWith("archive")) {
             Assert.assertEquals(row.getCellValue(2).toString(), "zip");
             Assert.assertNotNull(row.getCellValue(7));
             Assert.assertNotNull(row.getCellValue(8));
-            Assert.assertNull(row.getCellValue(9));
+            Assert.assertEquals(row.getCellValue(9).toString().trim().length(), 0);
         }
         else if ( fileCellValue.startsWith("persons")) {
             Assert.assertEquals(row.getCellValue(2).toString(), "gz");
             Assert.assertNotNull(row.getCellValue(7));
             Assert.assertNotNull(row.getCellValue(8));
-            Assert.assertNull(row.getCellValue(9));
+            Assert.assertEquals(row.getCellValue(9).toString().trim().length(), 0);
         }
         else {
             Assert.fail("Test failed : unknown record - " + row.toString());
