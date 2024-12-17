@@ -55,7 +55,7 @@ public class FilesImporter {
         columns.add("author");
         columns.add("filePath");
         columns.add("filePermissions");
-        columns.add("fileChecksum");
+        columns.add("sha256");
         columns.add("fileContent");
         JSONUtilities.safePut(options, "columnNames", columns);
         JSONUtilities.safePut(options, "separator", ",");
