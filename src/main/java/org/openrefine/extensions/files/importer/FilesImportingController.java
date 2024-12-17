@@ -177,7 +177,7 @@ public class FilesImportingController implements ImportingController {
 
         job.metadata.setName(JSONUtilities.getString(optionObj, "projectName", "Untitled"));
         job.metadata.setEncoding(JSONUtilities.getString(optionObj, "encoding", "UTF-8"));
-
+        job.metadata.setTags(JSONUtilities.getStringArray(optionObj, "projectTags"));;
         project.update(); // update all internal models, indexes, caches, etc.
 
         ProjectManager.singleton.registerProject(job.project, job.metadata);

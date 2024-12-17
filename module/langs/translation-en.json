@@ -16,5 +16,6 @@
     "files-parsing/start-over": "&laquo; Start Over",
     "files-parsing/conf-pars": "Configure Parsing Options",
     "files-parsing/proj-name": "Project&nbsp;name",
-    "files-parsing/create-proj": "Create Project &raquo;"
+    "files-parsing/create-proj": "Create Project &raquo;",
+    "files-parsing/project-tags": "Tags"
 }

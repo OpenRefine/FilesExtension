@@ -171,10 +171,15 @@ Refine.FilesImportingController.prototype._showParsingPanel = function() {
   this._parsingPanelElmts = DOM.bind(this._parsingPanel);
 
   this._parsingPanelElmts.startOverButton.html($.i18n('files-parsing/start-over'));
-  this._parsingPanelElmts.commons_conf_pars.html($.i18n('files-parsing/conf-pars'));
   this._parsingPanelElmts.commons_proj_name.html($.i18n('files-parsing/proj-name'));
+  $('#or-import-projtags').html($.i18n('files-parsing/project-tags'));
   this._parsingPanelElmts.createProjectButton.html($.i18n('files-parsing/create-proj'));
 
+  $("#tagsInput").select2({
+    data: Refine.TagsManager._getAllProjectTags() ,
+    tags: true,
+    tokenSeparators: [",", " "]
+  });
 
   if (this._parsingPanelResizer) {
     $(window).unbind('resize', this._parsingPanelResizer);
@@ -299,7 +304,10 @@ Refine.FilesImportingController.prototype._createProject = function() {
 
   var self = this;
   var options = this.getOptions();
+  var projectTags = $("#tagsInput").val();
+  console.log("tags -> " + projectTags);
   options.projectName = projectName;
+  options.projectTags = projectTags;
   Refine.wrapCSRF(function(token) {
     $.post(
         "command/core/importing-controller?" + $.param({
@@ -354,4 +362,28 @@ Refine.FilesImportingController.prototype._createProject = function() {
         "json"
     );
   });
+};
+
+Refine.TagsManager = {};
+Refine.TagsManager.allProjectTags = [];
+
+Refine.TagsManager._getAllProjectTags = function() {
+    var self = this;
+    if (self.allProjectTags.length === 0) {
+        jQuery.ajax({
+             url : "command/core/get-all-project-tags",
+             success : function(result) {
+                 var array = result.tags.sort(function (a, b) {
+                     return a.toLowerCase().localeCompare(b.toLowerCase());
+                     });
+
+                 array.map(function(item){
+                     self.allProjectTags.push(item);
+                 });
+
+                 },
+                 async : false
+                 });
+        }
+    return self.allProjectTags;
 };
