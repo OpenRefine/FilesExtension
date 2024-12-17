@@ -42,8 +42,7 @@ function init() {
     "index/styles",
     module,
     [
-      "styles/files-importing-controller.less",
-      "styles/theme.less"
+      "styles/files-importing-controller.css"
     ]
   );
 
