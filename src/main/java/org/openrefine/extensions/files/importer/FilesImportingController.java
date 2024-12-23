@@ -19,17 +19,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
+import static com.google.refine.commands.Command.respondJSON;
 import static com.google.refine.importing.ImportingUtilities.*;
 
 public class FilesImportingController implements ImportingController {
     private static final Logger logger = LoggerFactory.getLogger("FilesImportingController");
     protected RefineServlet servlet;
-    public static int DEFAULT_PREVIEW_LIMIT = 50;
-    public static int DEFAULT_PROJECT_LIMIT = 0;
 
     @Override
     public void init(RefineServlet servlet) {
@@ -69,9 +66,26 @@ public class FilesImportingController implements ImportingController {
             }
         } else if ("create-project".equals(subCommand)) {
             doCreateProject(request, response, parameters);
-        } else {
+        } else if ("filesystem-details".equals(subCommand)) {
+            getFileSystemDetails(request, response, parameters);
+        } else if ("directory-hierarchy".equals(subCommand)) {
+            getDirectoryHierarchy(request, response, parameters);
+        }
+        else {
             HttpUtilities.respond(response, "error", "No such sub command");
         }
+    }
+
+    private void getDirectoryHierarchy(HttpServletRequest request, HttpServletResponse response, Properties parameters) throws ServletException, IOException {
+        String dirPath = parameters.getProperty("dirPath");
+        List<Map<String, Object>> directoryList = FilesImporter.generateDirectoryTree(dirPath);
+        respondJSON(response, directoryList);
+    }
+
+    private void getFileSystemDetails(HttpServletRequest request, HttpServletResponse response, Properties parameters)
+            throws ServletException, IOException {
+        List<String> rootFS = FilesImporter.getRootDirectories();
+        respondJSON(response, rootFS);
     }
 
     private void doInitializeParserUI(HttpServletRequest request, HttpServletResponse response, Properties parameters)

@@ -33,13 +33,37 @@ public class FilesImporter {
     private static final Logger logger = LoggerFactory.getLogger("FilesImporter");
     private static final int fileContentSizeLimit = 1024;
 
+    private static String[] restrictedDirectories = {
+            "System32",
+            "Program Files",
+            "Program Files (x86)",
+            "Windows",
+            "usr",
+            "etc",
+            "var",
+            "bin",
+            "sbin",
+            "lib",
+            "opt",
+            "tmp",
+            "Volumes"
+    };
+
+
     public static long generateFileList(File file, ObjectNode options) throws IOException {
         JsonNode directoryInput = options.get("directoryJsonValue");
-
-        for (JsonNode directoryPath : directoryInput) {
-            getFileList(directoryPath.get("directory").asText(), file);
+        try {
+            FileWriter writer = new FileWriter(file);
+            CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT);
+            for (JsonNode directoryPath : directoryInput) {
+                getFileList(directoryPath.get("directory").asText(), csvPrinter);
+            }
+            csvPrinter.flush();
+            writer.close();
+            return file.length();
+        } catch (IOException e) {
+            throw new IOException("Failed to generate file list");
         }
-        return file.length();
     }
 
     public static void loadData(Project project, ProjectMetadata metadata, ImportingJob job, ArrayNode fileRecords) throws Exception {
@@ -80,12 +104,9 @@ public class FilesImporter {
         project.update();
     }
 
-    private static void getFileList(String directoryPath, File file) throws IOException {
+    private static void getFileList(String directoryPath, CSVPrinter csvPrinter) throws IOException {
         int depth = 1;
         try {
-                FileWriter writer = new FileWriter(file);
-                CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT);
-
                 Path rootPath = Paths.get(directoryPath);
                 Files.walkFileTree(rootPath, EnumSet.noneOf(FileVisitOption.class), depth, new SimpleFileVisitor<Path>() {
 
@@ -119,11 +140,8 @@ public class FilesImporter {
                     return FileVisitResult.CONTINUE;
                 }
             });
-            csvPrinter.flush();
-            writer.close();
         } catch (Exception e) {
             logger.info("--- importDirectory. Error reading directory: " + e.getMessage());
-            throw e;
         }
     }
 
@@ -212,4 +230,79 @@ public class FilesImporter {
             return (nonPrintableCount / (double) lengthToCheck) <= 0.05;
     }
 
+    public static List<Map<String, Object>> generateDirectoryTree(String directoryPath) throws IOException {
+        Path rootDir = Paths.get(directoryPath);
+        if (!Files.isDirectory(rootDir)) {
+            throw new IllegalArgumentException("The provided path must be a directory.");
+        }
+
+        // Create a list to hold the single root node
+        List<Map<String, Object>> rootList = new ArrayList<>();
+
+        // Build the root node
+        Map<String, Object> rootNode = buildDirectoryNode(rootDir);
+        rootList.add(rootNode);
+
+        return rootList;
+    }
+
+    private static Map<String, Object> buildDirectoryNode(Path dir) throws IOException {
+        Map<String, Object> currentNode = new HashMap<>();
+        String dirName = "unknown";
+        String dirPath = "unknown";
+        try {
+            dirName = dir.getFileName().toString();
+            dirPath = dir.toAbsolutePath().toString();
+        } catch (Exception e) {
+            logger.info("--- directoryHierarchy - Failed to get directory name or path - " + e.getMessage());
+        }
+        currentNode.put("name", dirName);
+        currentNode.put("path", dirPath);
+
+        List<Map<String, Object>> children = new ArrayList<>();
+
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
+            for (Path child : stream) {
+                try {
+                    if (Files.isDirectory(child)) {
+                        // Recursively add sub-directories
+                        children.add(buildDirectoryNode(child));
+                    }
+                } catch (SecurityException e) {
+                    logger.info("--- directoryHierarchy - skipping directory - " + e.getMessage());
+                }
+            }
+        }
+        catch (Exception e) {
+            logger.info("--- directoryHierarchy - skipping directory - " + e.getMessage());
+        }
+        children.sort((node1, node2) ->
+                node1.get("name").toString().compareToIgnoreCase(node2.get("name").toString())
+        );
+        currentNode.put("children", children);
+        return currentNode;
+    }
+
+    public static List<String> getRootDirectories() {
+        Iterable<Path> rootDirectories = FileSystems.getDefault().getRootDirectories();
+        List<String> rootFS = new ArrayList<>();
+        for (Path root : rootDirectories) {
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(root)) {
+                for (Path child : stream) {
+                    try {
+                        BasicFileAttributes attrs = Files.readAttributes(child, BasicFileAttributes.class);
+                        if ( attrs.isDirectory() && ! Arrays.stream(restrictedDirectories).anyMatch(restrictedDirName -> child.getFileName().toString().equalsIgnoreCase(restrictedDirName))) {
+                            rootFS.add(child.toString());
+                        }
+                    } catch (Exception e) {
+                        // do nothing
+                    }
+                }
+            } catch (Exception e) {
+                // do nothing
+                rootFS.add(root.toString());
+            }
+        }
+        return rootFS;
+    }
 }

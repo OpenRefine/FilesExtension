@@ -24,38 +24,58 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-.files-panel {
-  margin-bottom: 2em;
-}
-.files-panel > h1 {
-  font-size: 130%;
-  margin-bottom: 0.5em;
-}
-.grid-layout > table {
+
+.drive-selector-container {
+  margin-left: 5px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  display: flex;
   width: 100%;
 }
-.fixed-text {
-  width: 65%;
+
+.dropdown-container {
+  margin-left: 10px;
+  align-items: center;
 }
-.depth-input-box {
-  width: 30%;
+
+.directoryTreePanel {
+  margin-left: 5px;
+  margin-top: 15px;
 }
-.x-button-td {
-  text-align: left;
-}
-.buttons-div {
-  padding-left: 5px;
-}
-.preview-button {
-  width: 1%;
-}
-.fbs-reset.fbs-pane.fbs-pane-type {
-  width: 561px;
-}
-.scrollable {
-  height: 400px;
+
+.directory-tree-container {
+  height: 475px;
+  border: 1px solid rgb(118, 118, 118);
   overflow: auto;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
+
+#directory-tree ul {
+  list-style-type: none; 
+  margin-left: 20px; 
+  padding-left: 10px; 
+  border-left: 1px solid #ccc; 
+}
+
+#directory-tree li {
+  margin: 5px 0; 
+}
+
+#directory-tree label {
+  cursor: pointer;
+}
+
+#directory-tree input[type="checkbox"] {
+  margin-right: 5px; 
+}
+
+#directory-tree .toggle {
+  cursor: pointer;
+  font-weight: bold;
+  margin-right: 5px;
+}
+
 .files-importing-wizard-header {
   font-size: 1.3em;
   background: #bcf;
