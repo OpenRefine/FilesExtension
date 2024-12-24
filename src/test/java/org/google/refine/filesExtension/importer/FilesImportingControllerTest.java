@@ -1,5 +1,6 @@
 package org.google.refine.filesExtension.importer;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.refine.ProjectManager;
 import com.google.refine.ProjectMetadata;
 import com.google.refine.RefineServlet;
@@ -9,19 +10,18 @@ import com.google.refine.io.FileProjectManager;
 import com.google.refine.model.ModelException;
 import com.google.refine.model.Project;
 import com.google.refine.model.Row;
+import com.google.refine.util.ParsingUtilities;
 import edu.mit.simile.butterfly.ButterflyModule;
 import org.apache.commons.io.FileUtils;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.google.refine.filesExtension.utils.RefineServletStub;
+import org.openrefine.extensions.files.importer.FilesImporter;
 import org.openrefine.extensions.files.importer.FilesImportingController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -30,11 +30,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.openrefine.extensions.files.importer.FilesImporter.restrictedDirectories;
 
 public class FilesImportingControllerTest {
 
@@ -77,7 +77,7 @@ public class FilesImportingControllerTest {
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
-    @BeforeMethod
+    @BeforeTest
     public void setUp() throws IOException, ModelException {
 
         MockitoAnnotations.initMocks(this);
@@ -97,7 +97,7 @@ public class FilesImportingControllerTest {
 
     }
 
-    @AfterMethod
+    @AfterTest
     public void tearDown() {
         SUT = null;
         request = null;
@@ -147,7 +147,7 @@ public class FilesImportingControllerTest {
             }
         }
         catch (Exception e) {
-
+            Assert.fail("Failed - testLocalDirectoryFileList -" +e.getMessage());
         }
     }
 
@@ -203,4 +203,70 @@ public class FilesImportingControllerTest {
         tempFile.deleteOnExit();
         FileUtils.copyFile(new File(filepath), tempFile);
     }
+
+    @Test
+    public void testFileSystemDetails()  {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        try {
+
+            Map<String, String[]> parameters = new HashMap<>();
+            parameters.put("controller", new String[]{"files/files-importing-controller"});
+            parameters.put("subCommand", new String[]{"filesystem-details"});
+
+            when(request.getQueryString()).thenReturn(
+                    "http://127.0.0.1:3333/command/core/importing-controller?controller=files%2Ffiles-importing-controller&jobID=1&subCommand=filesystem-details");
+            when(response.getWriter()).thenReturn(pw);
+            when(request.getParameterMap()).thenReturn(parameters);
+
+
+            SUT.doPost(request, response);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<String> fileSystemDetails = objectMapper.readValue(sw.getBuffer().toString(), List.class);
+            Assert.assertTrue(fileSystemDetails.size() > 0);
+            fileSystemDetails.forEach(directoryName -> {
+                Assert.assertFalse(Arrays.stream(restrictedDirectories).anyMatch(restrictedDirName -> directoryName.toString().contains(restrictedDirName)));
+            });
+        }
+        catch (Exception e) {
+            Assert.fail("Failed - testFileSystemDetails -" +e.getMessage());
+        }
+    }
+
+    @Test
+    public void testDirectoryHierarchy() throws IOException, ServletException {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        String dirPath;
+        try {
+            File dir = createTempDirectory("OR_FilesExtension_Test_DirectoryList");
+            dirPath = dir.getPath().toString();
+
+            Map<String, String[]> parameters = new HashMap<>();
+            parameters.put("controller", new String[]{"files/files-importing-controller"});
+            parameters.put("subCommand", new String[]{"directory-hierarchy"});
+            parameters.put("dirPath", new String[] {dirPath});
+            when(request.getQueryString()).thenReturn(
+                    "http://127.0.0.1:3333/command/core/importing-controller?controller=files%2Ffiles-importing-controller&subCommand=directory-hierarchy&dirPath=".concat(dirPath));
+            when(request.getParameter("subCommand")).thenReturn("directory-hierarchy");
+            when(request.getParameter("dirPath")).thenReturn(dirPath);
+            when(request.getParameterMap()).thenReturn(parameters);
+            when(response.getWriter()).thenReturn(pw);
+
+            SUT.doPost(request, response);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<Map<String, Object>> directoryList = objectMapper.readValue(sw.getBuffer().toString(), List.class);
+
+            Assert.assertTrue(directoryList.size() > 0);
+            Assert.assertTrue(directoryList.get(0).get("name").toString().contains("OR_FilesExtension_Test_DirectoryList"));
+        }
+        catch (Exception e) {
+            Assert.fail("Failed - testDirectoryHierarchy -" +e.getMessage());
+        }
+    }
+    
 }
+
+

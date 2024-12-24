@@ -33,7 +33,7 @@ public class FilesImporter {
     private static final Logger logger = LoggerFactory.getLogger("FilesImporter");
     private static final int fileContentSizeLimit = 1024;
 
-    private static String[] restrictedDirectories = {
+    public static String[] restrictedDirectories = {
             "System32",
             "Program Files",
             "Program Files (x86)",
