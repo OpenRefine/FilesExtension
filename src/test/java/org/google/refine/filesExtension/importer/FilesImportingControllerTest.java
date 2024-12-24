@@ -127,15 +127,9 @@ public class FilesImportingControllerTest {
 
             String localDirectoryPath = "{\"directoryJsonValue\":[{\"directory\":\"@localdirectorypath\"}],\"fileContentColumn\":0}".replace("@localdirectorypath", testDirPath);
 
-            Map<String, String[]> parameters = new HashMap<>();
-            parameters.put("controller", new String[]{"files/files-importing-controller"});
-            parameters.put("jobID", new String[] { String.valueOf(job.id) });
-            parameters.put("subCommand", new String[]{"local-directory-preview"});
-
             when(request.getQueryString()).thenReturn(
                     "http://127.0.0.1:3333/command/core/importing-controller?controller=files%2Ffiles-importing-controller&jobID=1&subCommand=local-directory-preview");
             when(response.getWriter()).thenReturn(pw);
-            when(request.getParameterMap()).thenReturn(parameters);
             when(request.getParameter("options")).thenReturn(localDirectoryPath);
 
             SUT.doPost(request, response);
@@ -210,15 +204,9 @@ public class FilesImportingControllerTest {
         PrintWriter pw = new PrintWriter(sw);
         try {
 
-            Map<String, String[]> parameters = new HashMap<>();
-            parameters.put("controller", new String[]{"files/files-importing-controller"});
-            parameters.put("subCommand", new String[]{"filesystem-details"});
-
             when(request.getQueryString()).thenReturn(
                     "http://127.0.0.1:3333/command/core/importing-controller?controller=files%2Ffiles-importing-controller&jobID=1&subCommand=filesystem-details");
             when(response.getWriter()).thenReturn(pw);
-            when(request.getParameterMap()).thenReturn(parameters);
-
 
             SUT.doPost(request, response);
 
@@ -243,15 +231,8 @@ public class FilesImportingControllerTest {
             File dir = createTempDirectory("OR_FilesExtension_Test_DirectoryList");
             dirPath = dir.getPath().toString();
 
-            Map<String, String[]> parameters = new HashMap<>();
-            parameters.put("controller", new String[]{"files/files-importing-controller"});
-            parameters.put("subCommand", new String[]{"directory-hierarchy"});
-            parameters.put("dirPath", new String[] {dirPath});
             when(request.getQueryString()).thenReturn(
                     "http://127.0.0.1:3333/command/core/importing-controller?controller=files%2Ffiles-importing-controller&subCommand=directory-hierarchy&dirPath=".concat(dirPath));
-            when(request.getParameter("subCommand")).thenReturn("directory-hierarchy");
-            when(request.getParameter("dirPath")).thenReturn(dirPath);
-            when(request.getParameterMap()).thenReturn(parameters);
             when(response.getWriter()).thenReturn(pw);
 
             SUT.doPost(request, response);
