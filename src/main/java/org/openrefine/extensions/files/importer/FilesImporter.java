@@ -303,6 +303,7 @@ public class FilesImporter {
                 rootFS.add(root.toString());
             }
         }
+        rootFS.sort((dir1, dir2) -> dir1.compareToIgnoreCase(dir2));
         return rootFS;
     }
 }
