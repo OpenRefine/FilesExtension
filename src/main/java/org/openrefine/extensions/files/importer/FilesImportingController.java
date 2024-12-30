@@ -110,7 +110,7 @@ public class FilesImportingController implements ImportingController {
 
     private void doLocalDirectoryPreview(
             HttpServletRequest request, HttpServletResponse response, Properties parameters)
-            throws ServletException, IOException, Exception {
+            throws Exception {
 
         long jobID = Long.parseLong(parameters.getProperty("jobID"));
         ImportingJob job = ImportingManager.getJob(jobID);
@@ -144,14 +144,11 @@ public class FilesImportingController implements ImportingController {
         JSONUtilities.safePut(fileRecord, "declaredMimeType", (String) null);
         JSONUtilities.safePut(fileRecord, "fileName", "filelist.csv");
         JSONUtilities.safePut(fileRecord, "location", getRelativePath(file, job.getRawDataDir()));
-
         JSONUtilities.safePut(fileRecord, "size", fileLength);
         JSONUtilities.safePut(fileRecord, "format","text/line-based/*sv" );
         JSONUtilities.append(fileRecords, fileRecord);
 
         FilesImporter.loadData(job.project, job.metadata, job, fileRecords);
-
-
 
         job.touch();
         job.updating = false;
@@ -161,12 +158,11 @@ public class FilesImportingController implements ImportingController {
         rankedFormats.add("text/line-based/*sv");
         rankedFormats.add("text/line-based");
         JSONUtilities.safePut(config, "rankedFormats", rankedFormats);
-        JSONUtilities.safePut(result, "status", "ok");
         JSONUtilities.safePut(config, "hasData", true);
-        JSONUtilities.safePut(config, "rankedFormats", rankedFormats);
         JSONUtilities.safePut(result, "job", job.getJsonConfig());
+        JSONUtilities.safePut(result, "status", "ok");
 
-        HttpUtilities.respond(response, result.toString());
+        respondJSON(response, result);
     }
 
     private void doCreateProject(HttpServletRequest request, HttpServletResponse response, Properties parameters)
