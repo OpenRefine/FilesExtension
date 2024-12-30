@@ -213,8 +213,11 @@ public class FilesImportingControllerTest {
             ObjectMapper objectMapper = new ObjectMapper();
             List<String> fileSystemDetails = objectMapper.readValue(sw.getBuffer().toString(), List.class);
             Assert.assertTrue(fileSystemDetails.size() > 0);
-            fileSystemDetails.forEach(directoryName -> {
-                Assert.assertFalse(Arrays.stream(restrictedDirectories).anyMatch(restrictedDirName -> directoryName.toString().contains(restrictedDirName)));
+            fileSystemDetails.forEach(fileSystemRecord -> {
+                String directoryName = fileSystemRecord.startsWith(File.separator)
+                        ? fileSystemRecord.substring(1)
+                        : fileSystemRecord;
+                Assert.assertFalse(Arrays.stream(restrictedDirectories).anyMatch(restrictedDirName -> directoryName.equals(restrictedDirName)));
             });
         }
         catch (Exception e) {
