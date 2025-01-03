@@ -4,6 +4,7 @@
     "files-import/selectDrive": "Select a drive or folder",
     "files-import/selectDirectory": "Browse the directory hierarchy & Select the directories from which file details need to be generated.",
     "files-import/no-directory-selected": "No directory selected",
+    "files-import/select-one": "Select one",
     "files-import/scanning": "Scanning for files",
     "files-parsing/project-default-name": "fileList",
     "files-import/warning-directory-selection": "You must select 1 or more directories.",
@@ -17,5 +18,6 @@
     "files-parsing/project-tags": "Tags",
     "files-import/fetch-drive-details-failed": "Failed to get drive details. Try again.",
     "files-import/fetch-directory-details-failed": "Failed to get directory details. Try again.",
-    "files-import/fetchingDirectoryDetails": "Fetching directory details ..."
+    "files-import/fetchingDirectoryDetails": "Fetching directory details ...",
+    "files-import/drive-not-selected": "No drive or directory selected. Please select a drive / directory."
 }

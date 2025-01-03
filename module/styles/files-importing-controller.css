@@ -76,6 +76,11 @@
   margin-right: 5px;
 }
 
+#directory-tree .notoggle {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
 .files-importing-wizard-header {
   font-size: 1.3em;
   background: #bcf;

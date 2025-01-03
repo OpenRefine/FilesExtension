@@ -33,8 +33,9 @@ Refine.LocalDirectorySourceUI.prototype.attachUI = function (bodyDiv) {
           }
           else {
             fileSystemDetails = data;
+            const selectOneLabel = $.i18n('files-import/select-one');
             const driveSelector = $("#drive-selector");
-            driveSelector.append('<option value="" disabled selected>Select One</option>');
+            driveSelector.append('<option value="" disabled selected>' + selectOneLabel + '</option>');
             fileSystemDetails.forEach((item) => {
               const option = document.createElement("option");
               option.value = item;
@@ -81,7 +82,7 @@ Refine.LocalDirectorySourceUI.prototype.attachUI = function (bodyDiv) {
       $("#directoryTreePanel").hide();
       getDirectoryHierarchy(selectedValue);
     } else {
-      console.log("No valid option selected.");
+      window.alert($.i18n('files-import/drive-not-selected'));
     }
   });
 
@@ -141,7 +142,7 @@ Refine.LocalDirectorySourceUI.prototype.attachUI = function (bodyDiv) {
 
           $li.append($toggle);
         } else {
-          const $toggle = $("<span class='toggle'>-</span>");
+          const $toggle = $("<span class='notoggle'>-</span>");
           $li.append($toggle);
         }
 
