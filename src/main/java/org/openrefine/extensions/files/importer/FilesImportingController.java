@@ -19,6 +19,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.*;
 
 import static com.google.refine.commands.Command.respondJSON;
@@ -78,8 +82,10 @@ public class FilesImportingController implements ImportingController {
 
     private void getDirectoryHierarchy(HttpServletRequest request, HttpServletResponse response, Properties parameters) throws ServletException, IOException {
         String dirPath = parameters.getProperty("dirPath");
-        List<Map<String, Object>> directoryList = FilesImporter.generateDirectoryTree(dirPath);
-        respondJSON(response, directoryList);
+        String fileName = "directoryList_OR_".concat(Instant.now().toString());
+        Path outputFile = Files.createTempFile(fileName, ".json");
+        FilesImporter.generateDirectoryTree(dirPath, outputFile);
+        respondJSON(response, Files.readString(outputFile));
     }
 
     private void getFileSystemDetails(HttpServletRequest request, HttpServletResponse response, Properties parameters)

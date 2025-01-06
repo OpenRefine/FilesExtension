@@ -1,5 +1,6 @@
 package org.google.refine.filesExtension.importer;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.refine.ProjectManager;
 import com.google.refine.ProjectMetadata;
@@ -241,10 +242,11 @@ public class FilesImportingControllerTest {
             SUT.doPost(request, response);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            List<Map<String, Object>> directoryList = objectMapper.readValue(sw.getBuffer().toString(), List.class);
+            String outputJson = objectMapper.readValue(sw.getBuffer().toString(), String.class);
+            Map<String, Object> directoryList = objectMapper.readValue(outputJson, new TypeReference<Map<String, Object>>() {});
 
             Assert.assertTrue(directoryList.size() > 0);
-            Assert.assertTrue(directoryList.get(0).get("name").toString().contains("OR_FilesExtension_Test_DirectoryList"));
+            Assert.assertTrue(directoryList.get("name").toString().contains("OR_FilesExtension_Test_DirectoryList"));
         }
         catch (Exception e) {
             Assert.fail("Failed - testDirectoryHierarchy -" +e.getMessage());

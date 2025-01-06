@@ -67,7 +67,8 @@ Refine.LocalDirectorySourceUI.prototype.attachUI = function (bodyDiv) {
           if (!(data)) {
             window.alert($.i18n('files-import/fetch-directory-details-failed'));
           } else {
-            renderTreeView(data);
+            var treeData = [JSON.parse(data)];
+            renderTreeView(treeData);
             $("#directoryTreePanel").show();
           }
         },
@@ -128,15 +129,15 @@ Refine.LocalDirectorySourceUI.prototype.attachUI = function (bodyDiv) {
             `);
 
         if (hasChildren) {
-          const $toggle = $("<span class='toggle'>+</span>");
+          const $toggle = $("<span class='toggle'>></span>");
           $toggle.on("click", function () {
             const $childUl = $li.children("ul");
             if ($childUl.is(":visible")) {
               $childUl.slideUp();
-              $toggle.text("+");
+              $toggle.text(">");
             } else {
               $childUl.slideDown();
-              $toggle.text("-");
+              $toggle.text("v");
             }
           });
 
