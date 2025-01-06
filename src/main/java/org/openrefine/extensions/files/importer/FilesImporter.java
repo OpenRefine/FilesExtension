@@ -1,6 +1,10 @@
 package org.openrefine.extensions.files.importer;
 
+import com.fasterxml.jackson.core.JsonEncoding;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.refine.ProjectMetadata;
@@ -27,19 +31,50 @@ import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 public class FilesImporter {
     private static final Logger logger = LoggerFactory.getLogger("FilesImporter");
     private static final int fileContentSizeLimit = 1024;
 
+    public static String[] restrictedDirectories = {
+            "System32",
+            "Startup",
+            "Programs",
+            "Program Files",
+            "Program Files (x86)",
+            "Windows",
+            "usr",
+            "etc",
+            "var",
+            "proc",
+            "sys",
+            "dev",
+            "boot",
+            "bin",
+            "sbin",
+            "lib",
+            "opt",
+            "tmp",
+            "Volumes",
+            "System",
+            "Applications",
+            "Library"
+    };
+
+
     public static long generateFileList(File file, ObjectNode options) throws IOException {
         JsonNode directoryInput = options.get("directoryJsonValue");
-
-        for (JsonNode directoryPath : directoryInput) {
-            getFileList(directoryPath.get("directory").asText(), file);
+        try {
+            FileWriter writer = new FileWriter(file);
+            CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT);
+            for (JsonNode directoryPath : directoryInput) {
+                getFileList(directoryPath.get("directory").asText(), csvPrinter);
+            }
+            csvPrinter.flush();
+            writer.close();
+            return file.length();
+        } catch (IOException e) {
+            throw new IOException("Failed to generate file list");
         }
-        return file.length();
     }
 
     public static void loadData(Project project, ProjectMetadata metadata, ImportingJob job, ArrayNode fileRecords) throws Exception {
@@ -80,12 +115,9 @@ public class FilesImporter {
         project.update();
     }
 
-    private static void getFileList(String directoryPath, File file) throws IOException {
+    private static void getFileList(String directoryPath, CSVPrinter csvPrinter) throws IOException {
         int depth = 1;
         try {
-                FileWriter writer = new FileWriter(file);
-                CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT);
-
                 Path rootPath = Paths.get(directoryPath);
                 Files.walkFileTree(rootPath, EnumSet.noneOf(FileVisitOption.class), depth, new SimpleFileVisitor<Path>() {
 
@@ -119,11 +151,8 @@ public class FilesImporter {
                     return FileVisitResult.CONTINUE;
                 }
             });
-            csvPrinter.flush();
-            writer.close();
         } catch (Exception e) {
             logger.info("--- importDirectory. Error reading directory: " + e.getMessage());
-            throw e;
         }
     }
 
@@ -210,6 +239,88 @@ public class FilesImporter {
                 }
             }
             return (nonPrintableCount / (double) lengthToCheck) <= 0.05;
+    }
+
+    public static List<String> getRootDirectories() {
+        Iterable<Path> rootDirectories = FileSystems.getDefault().getRootDirectories();
+        List<String> rootFS = new ArrayList<>();
+        for (Path root : rootDirectories) {
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(root)) {
+                for (Path child : stream) {
+                    try {
+                        BasicFileAttributes attrs = Files.readAttributes(child, BasicFileAttributes.class);
+                        if ( attrs.isDirectory() && ! Arrays.stream(restrictedDirectories).anyMatch(restrictedDirName -> child.getFileName().toString().equalsIgnoreCase(restrictedDirName))) {
+                            rootFS.add(child.toString());
+                        }
+                    } catch (Exception e) {
+                        // do nothing
+                    }
+                }
+            } catch (Exception e) {
+                // do nothing
+                rootFS.add(root.toString());
+            }
+        }
+        rootFS.sort((dir1, dir2) -> dir1.compareToIgnoreCase(dir2));
+        return rootFS;
+    }
+
+    public static void generateDirectoryTree(String directoryPath, Path outputFile) throws IOException {
+        Path dir = Paths.get(directoryPath);
+        if (!Files.isDirectory(dir)) {
+            throw new IllegalArgumentException("The provided path must be a directory.");
+        }
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.writer().without(SerializationFeature.INDENT_OUTPUT);
+        try (JsonGenerator jsonGenerator = objectMapper.getFactory().createGenerator(outputFile.toFile(), JsonEncoding.UTF8)) {
+            jsonGenerator.writeStartObject();
+            buildDirectoryNode(dir, jsonGenerator);
+            jsonGenerator.writeEndObject();
+        } catch (Exception e) {
+            logger.info("--- directoryHierarchy - Failed to write directory structure to file: " + e.getMessage());
+        }
+    }
+
+    private static void buildDirectoryNode(Path dir, JsonGenerator jsonGenerator) throws IOException {
+        try {
+            String dirName = "unknown";
+            String dirPath = "unknown";
+            try {
+                dirName = dir.getFileName().toString();
+                dirPath = dir.toAbsolutePath().toString();
+            } catch (Exception e) {}
+
+            jsonGenerator.writeFieldName("name");
+            jsonGenerator.writeString(dirName);
+
+            jsonGenerator.writeFieldName("path");
+            jsonGenerator.writeString(dirPath);
+
+            jsonGenerator.writeFieldName("children");
+            jsonGenerator.writeStartArray();
+
+            List<Path> children = new ArrayList<>();
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
+                for (Path child : stream) {
+                    if (Files.isDirectory(child)) {
+                        children.add(child);
+                    }
+                }
+            } catch (Exception e) {
+                // do nothing - Security exception
+            }
+
+            children.sort((p1, p2) -> p1.getFileName().toString().compareToIgnoreCase(p2.getFileName().toString()));
+            for (Path child : children) {
+                jsonGenerator.writeStartObject();
+                buildDirectoryNode(child, jsonGenerator);
+                jsonGenerator.writeEndObject();
+            }
+            jsonGenerator.writeEndArray();
+        } catch (Exception e) {
+            logger.info("--- directoryHierarchy - Failed to process directory: " + e.getMessage());
+        }
     }
 
 }
