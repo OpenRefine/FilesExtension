@@ -62,7 +62,7 @@ The following information is included for each file:
 - Users can modify the generated name before creation
 - Additional tags can be added for better organization
   
-<img width="1434" alt="Project preview" src="https://github.com/user-attachments/assets/c41e9c97-9ac1-4c95-813e-422f0166264c" />
+<img width="1438" alt="Project preview" src="https://github.com/user-attachments/assets/e7f30bd8-38cc-4a7a-8ca6-774fd20e47f3" />
 
 
 ---
