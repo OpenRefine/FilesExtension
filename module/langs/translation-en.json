@@ -6,7 +6,7 @@
     "files-import/no-directory-selected": "No directory selected",
     "files-import/select-one": "Select one",
     "files-import/scanning": "Scanning for files",
-    "files-parsing/project-default-name": "fileList",
+    "files-parsing/project-default-name": "folder-details",
     "files-import/warning-directory-selection": "You must select 1 or more directories.",
     "files-import/preparing": "Preparing…",
     "files-import/creating": "Creating project…",

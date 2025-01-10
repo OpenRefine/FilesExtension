@@ -58,6 +58,7 @@ Refine.FilesImportingController.prototype.startImportingDocument = function(doc)
                     self._doc = doc;
                     self._jobID = data.jobID;
                     self._options = data2.options;
+                    self._projectName = data2.projectName;
 
                     self._showParsingPanel();
                 } else {
@@ -214,13 +215,14 @@ Refine.FilesImportingController.prototype._showParsingPanel = function() {
     delete self._doc;
     delete self._jobID;
     delete self._options;
+    delete self._projectName;
 
     self._createProjectUI.showSourceSelectionPanel();
   });
 
   this._parsingPanelElmts.createProjectButton.click(function() { self._createProject(); });
 
-  this._parsingPanelElmts.projectNameInput[0].value = $.i18n('files-parsing/project-default-name');
+  this._parsingPanelElmts.projectNameInput[0].value = self._projectName ? self._projectName : $.i18n('files-parsing/project-default-name');
 
   this._createProjectUI.showCustomPanel(this._parsingPanel);
   this._updatePreview();

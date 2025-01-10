@@ -100,10 +100,15 @@ public class FilesImportingController implements ImportingController {
             logger.debug("::doInitializeParserUI::");
         }
 
+        ArrayNode directoryInput = ParsingUtilities.evaluateJsonStringToArrayNode(
+                parameters.getProperty("directoryJsonValue"));
+        String projectName = FilesImporter.generateProjectName(directoryInput);
+
         ObjectNode result = ParsingUtilities.mapper.createObjectNode();
         ObjectNode options = ParsingUtilities.mapper.createObjectNode();
         JSONUtilities.safePut(result, "status", "ok");
         JSONUtilities.safePut(result, "options", options);
+        JSONUtilities.safePut(result, "projectName", projectName);
 
         JSONUtilities.safePut(options, "skipDataLines", 0);
         if(logger.isDebugEnabled()) {

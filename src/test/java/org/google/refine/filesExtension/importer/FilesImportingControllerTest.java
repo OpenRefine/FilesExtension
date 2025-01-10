@@ -153,37 +153,31 @@ public class FilesImportingControllerTest {
             Assert.assertEquals(row.getCellValue(2).toString(), "csv");
             Assert.assertNotNull(row.getCellValue(7));
             Assert.assertNotNull(row.getCellValue(8));
-            Assert.assertNotNull(row.getCellValue(9));
         }
         else if ( fileCellValue.startsWith("movies")) {
             Assert.assertEquals(row.getCellValue(2).toString(), "tsv");
             Assert.assertNotNull(row.getCellValue(7));
             Assert.assertNotNull(row.getCellValue(8));
-            Assert.assertNotNull(row.getCellValue(9));
         }
         else if ( fileCellValue.startsWith("dates")) {
             Assert.assertEquals(row.getCellValue(2).toString(), "xls");
             Assert.assertNotNull(row.getCellValue(7));
             Assert.assertNotNull(row.getCellValue(8));
-            Assert.assertEquals(row.getCellValue(9).toString().trim().length(), 0);
         }
         else if ( fileCellValue.startsWith("euc-jp")) {
             Assert.assertEquals(row.getCellValue(2).toString(), "html");
             Assert.assertNotNull(row.getCellValue(7));
             Assert.assertNotNull(row.getCellValue(8));
-            Assert.assertNotNull(row.getCellValue(9));
         }
         else if ( fileCellValue.startsWith("archive")) {
             Assert.assertEquals(row.getCellValue(2).toString(), "zip");
             Assert.assertNotNull(row.getCellValue(7));
             Assert.assertNotNull(row.getCellValue(8));
-            Assert.assertEquals(row.getCellValue(9).toString().trim().length(), 0);
         }
         else if ( fileCellValue.startsWith("persons")) {
             Assert.assertEquals(row.getCellValue(2).toString(), "gz");
             Assert.assertNotNull(row.getCellValue(7));
             Assert.assertNotNull(row.getCellValue(8));
-            Assert.assertEquals(row.getCellValue(9).toString().trim().length(), 0);
         }
         else {
             Assert.fail("Test failed : unknown record - " + row.toString());

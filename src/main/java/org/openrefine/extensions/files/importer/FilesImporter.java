@@ -91,7 +91,6 @@ public class FilesImporter {
         columns.add("filePath");
         columns.add("filePermissions");
         columns.add("sha256");
-        columns.add("fileContent");
         JSONUtilities.safePut(options, "columnNames", columns);
         JSONUtilities.safePut(options, "separator", ",");
 
@@ -141,9 +140,8 @@ public class FilesImporter {
                             String fileExt = getFileExt(fileName);
                             String filePermissions = getFilePermissions(file);
                             String fileChecksum = calculateFileChecksum(file, "SHA-256");
-                            String fileContent = getFileContent(file);
 
-                            csvPrinter.printRecord(fileName, fileSize, fileExt, dateModified, dateCreated, author, filePath, filePermissions, fileChecksum, fileContent);
+                            csvPrinter.printRecord(fileName, fileSize, fileExt, dateModified, dateCreated, author, filePath, filePermissions, fileChecksum);
                         }
                     } catch (Exception e) {
                         logger.info("--- importDirectory. Error processing file: " + file + " - " + e.getMessage());
@@ -212,15 +210,28 @@ public class FilesImporter {
     }
 
     private static String getFileContent(Path path) {
-        if (Files.exists(path)) {
-            try {
-                String content = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
-                int maxBytes = Math.min(content.length(), 1 * fileContentSizeLimit); // Max 32KB
-                if ( canIncludeFileContent(content)) {
-                    return content.substring(0, maxBytes);
+        if (Files.exists(path) && Files.isReadable(path)) {
+            try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
+                StringBuilder contentBuilder = new StringBuilder();
+                char[] buffer = new char[1024];
+                int bytesRead;
+                int totalBytesRead = 0;
+                int maxBytes = fileContentSizeLimit;
+
+                while ((bytesRead = reader.read(buffer, 0, Math.min(buffer.length, maxBytes - totalBytesRead))) != -1) {
+                    contentBuilder.append(buffer, 0, bytesRead);
+                    totalBytesRead += bytesRead;
+
+                    if (totalBytesRead >= maxBytes) {
+                        break;
+                    }
                 }
-            }
-            catch (IOException e) {
+
+                String content = contentBuilder.toString();
+                if (canIncludeFileContent(content)) {
+                    return content;
+                }
+            } catch (IOException e) {
                 logger.info("--- importDirectory. Failed to read file content: " + e.getMessage());
             }
         }
@@ -320,6 +331,22 @@ public class FilesImporter {
             jsonGenerator.writeEndArray();
         } catch (Exception e) {
             logger.info("--- directoryHierarchy - Failed to process directory: " + e.getMessage());
+        }
+    }
+
+    public static String generateProjectName(ArrayNode directoryInput)  {
+        if ( directoryInput == null || directoryInput.isEmpty() ) {
+            return "folder-details";
+        }
+        String folder1 = Paths.get(directoryInput.get(0).get("directory").asText()).getFileName().toString();
+        String folder2 = directoryInput.size() > 1 ? Paths.get(directoryInput.get(1).get("directory").asText()).getFileName().toString() : null;
+
+        if (folder2 == null) {
+            return String.format("folder-details_%s", folder1);
+        } else if (directoryInput.size() > 2) {
+            return String.format("folder-details_%s_%s_and_more", folder1, folder2);
+        } else {
+            return String.format("folder-details_%s_%s", folder1, folder2);
         }
     }
 
