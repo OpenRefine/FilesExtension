@@ -1,10 +1,9 @@
 # Files Extension for OpenRefine
-
-This extension provides the ability to create a project with details of files from folders on your system.
+OpenRefine provides a powerful feature for generating detailed file information from selected directories in your local system. This functionality allows users to create projects containing comprehensive file metadata.
 
 Features included in this extension:
-* Start an OpenRefine project by loading details of files from one or more folders on your system.
-* File details included are file name, extension, size in KB, creation date, last modification date, permissions, SHA-256 checksum, file data upto 1K, author and file path
+* Start an OpenRefine project by loading details of files from one or more folders on your local system.
+* File details included are file name, extension, size in KB, creation date, last modification date, permissions, SHA-256 checksum, author and file path
 
 
 It works with **OpenRefine 3.8.x and later versions of OpenRefine**. 
@@ -20,22 +19,51 @@ When this extension is installed correctly, you will now see the additional opti
 
 ### Start an OpenRefine project
 
+After installing this extension, click the 'Files from local directory' option to start a new project in OpenRefine. Use the "Select a drive or folder" dropdown to select the top level drive or folder to get directory details.
 
-After installing this extension, click the 'Files from local directory' option to start a new project in OpenRefine. You will be prompted to specify one or more folders.
-
-<img width="1435" alt="Screenshot 2024-12-10 at 3 25 30 PM" src="https://github.com/user-attachments/assets/142889c0-77e0-4dd0-8b5f-c20250695b82">
-
----
-
-Due to security restrictions, directory selection is not supported. The path to the directory will have to keyed in.
-
-<img width="1440" alt="Screenshot 2024-12-10 at 3 25 50 PM" src="https://github.com/user-attachments/assets/0ae199aa-1176-43f3-8227-d14e2f71957e">
+<img width="1439" alt="Start project" src="https://github.com/user-attachments/assets/f48c9edb-3081-4be2-ab8a-de41e0f0f991" />
 
 ---
 
-Next, in the project preview screen (`Configure parsing options`), you can view the details of the files in the specified folder(s).
+### Directory Navigation
 
-<img width="1438" alt="Screenshot 2024-12-10 at 3 27 13 PM" src="https://github.com/user-attachments/assets/b75bb3c5-7f8a-4748-9273-0786e6b38143">
+The system presents a hierarchical directory browser that allows you to:
+- Expand/collapse directories using arrow indicators
+- Select multiple directories simultaneously using checkboxes
+- View the complete directory structure under the selected root drive/folder
+- Navigate through system directories including user folders, system folders, and mounted volumes
+
+<img width="1436" alt="Directory navigation" src="https://github.com/user-attachments/assets/e753b3c6-1b14-427d-b25d-4f67155f683d" />
+
+
+---
+
+### File Details Generation
+Once directories are selected, Click Next. In the project preview screen (`Configure parsing options`), you can view the details of the files in the selected folder(s).
+The following information is included for each file:
+
+| Field | Description |
+|-------|-------------|
+| fileName | Name of the file with extension |
+| fileSize(KB) | Size of the file in kilobytes |
+| fileExtension | The file's extension type |
+| lastModifiedTime | Last modification timestamp |
+| creationTime | File creation timestamp |
+| author | Owner/creator of the file |
+| filePath | Complete path to the file location |
+| filePermissions | Read/write/execute permissions |
+| sha256 | SHA-256 hash of the file |
+---
+
+### Project Naming Convention
+- The project name is automatically generated based on selected folders
+- Format: `folder-details_[folder1]_[folder2]_and_more
+- Upto 2 selected folders are concatenated in the name
+- Users can modify the generated name before creation
+- Additional tags can be added for better organization
+  
+<img width="1434" alt="Project preview" src="https://github.com/user-attachments/assets/c41e9c97-9ac1-4c95-813e-422f0166264c" />
+
 
 ---
 
