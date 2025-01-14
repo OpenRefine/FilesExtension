@@ -11,6 +11,7 @@ Refine.LocalDirectorySourceUI.prototype.attachUI = function (bodyDiv) {
   this._elmts = DOM.bind(bodyDiv);
 
   $("#directoryTreePanel").hide();
+  $('#fileExtensionsLabel').text($.i18n('files-import/fileExtensionsLabel'));
   $('#driveSelectorLabel').text($.i18n('files-import/selectDrive'));
   $('#directorySelectLabel').text($.i18n('files-import/selectDirectory'));
   this._elmts.nextButton.html($.i18n('files-import/next'));

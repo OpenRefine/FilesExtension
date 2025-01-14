@@ -1,6 +1,7 @@
 {
     "files-import/menu-localdirectory": "Files from local directory",
     "files-import/directory": "Local directory",
+    "files-import/fileExtensionsLabel": "Create a project by loading details of files from one or more folders on your local system. File details included are file name, extension, size in KB, creation date, last modification date, permissions, SHA-256 checksum, author and file path.",
     "files-import/selectDrive": "Select a drive or folder",
     "files-import/selectDirectory": "Browse the directory hierarchy & Select the directories from which file details need to be generated.",
     "files-import/no-directory-selected": "No directory selected",

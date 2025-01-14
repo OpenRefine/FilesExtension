@@ -31,6 +31,7 @@
   margin-bottom: 15px;
   display: flex;
   width: 100%;
+  cursor: pointer;
 }
 
 .dropdown-container {
@@ -44,7 +45,7 @@
 }
 
 .directory-tree-container {
-  height: 475px;
+  height: 440px;
   border: 1px solid rgb(118, 118, 118);
   overflow: auto;
   margin-top: 5px;
