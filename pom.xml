@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <properties>
-    <openrefine.version>3.8.7</openrefine.version>
+    <openrefine.version>3.9-beta1</openrefine.version>
     <!-- Change the values below, as well as the groupId & url, to reflect your extension -->
     <extension.id>openrefine-files-extension</extension.id>
     <extension.name>OpenRefine Files Extension</extension.name>
