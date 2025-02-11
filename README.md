@@ -6,7 +6,7 @@ Features included in this extension:
 * File details included are file name, extension, size in KB, creation date, last modification date, permissions, SHA-256 checksum, author and file path
 
 
-It works with **OpenRefine 3.8.x and later versions of OpenRefine**. 
+It works with **OpenRefine 3.8.7 and later versions of OpenRefine**. 
 
 ## How to use this extension
 
