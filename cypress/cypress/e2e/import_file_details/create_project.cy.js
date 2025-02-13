@@ -36,5 +36,9 @@ describe(__filename, function () {
       .contains('Create Project »')
       .click();
     cy.waitForProjectTable();
+
+    cy.get('button[id="project-name-button"]')
+          .should('have.text', 'folder-details_home');
+          
   });
 });
