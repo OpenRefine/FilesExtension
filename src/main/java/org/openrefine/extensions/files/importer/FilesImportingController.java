@@ -82,7 +82,7 @@ public class FilesImportingController implements ImportingController {
 
     private void getDirectoryHierarchy(HttpServletRequest request, HttpServletResponse response, Properties parameters) throws ServletException, IOException {
         String dirPath = parameters.getProperty("dirPath");
-        String fileName = "directoryList_OR_".concat(Instant.now().toString());
+        String fileName = "directoryList_OR_".concat(Instant.now().toString().replace(":", ""));
         Path outputFile = Files.createTempFile(fileName, ".json");
         FilesImporter.generateDirectoryTree(dirPath, outputFile);
         respondJSON(response, Files.readString(outputFile));
