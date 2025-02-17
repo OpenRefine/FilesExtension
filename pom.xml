@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <properties>
-    <openrefine.version>3.8.7</openrefine.version>
+    <openrefine.version>3.9.0</openrefine.version>
     <!-- Change the values below, as well as the groupId & url, to reflect your extension -->
     <extension.id>openrefine-files-extension</extension.id>
     <extension.name>OpenRefine Files Extension</extension.name>
@@ -105,7 +105,7 @@
   <dependencies>
      <dependency>
       <groupId>org.openrefine</groupId>
-      <artifactId>main</artifactId>
+      <artifactId>core</artifactId>
       <version>${openrefine.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -126,7 +126,7 @@
     </dependency>
     <dependency>
       <groupId>org.openrefine</groupId>
-      <artifactId>main</artifactId>
+      <artifactId>core</artifactId>
       <version>${openrefine.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
